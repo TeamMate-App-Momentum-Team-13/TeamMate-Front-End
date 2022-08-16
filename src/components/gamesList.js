@@ -65,7 +65,7 @@ export default function GamesList({ token }) {
 function OpenGameDetail({ game }) {
     console.log(game);
     return (
-        <div>
+        <div className="modal">
             <div>{game.location_info.park_name}</div>
             <div>(park address)</div>
             <div>

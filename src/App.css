@@ -76,10 +76,13 @@ body {
     overflow-y: hidden;
     border: 0;
     border-radius: 20px;
-    width: 400px;
+    width: 200px;
+    /* Changed width from 400px to 200px - R */
     height: 800px;
     margin: 0 auto;
     text-align: right;
+    /* Added the styles below so the modal is readable while working on functionality */
+    background-color: white;
 }
 
 .close-modal-button {
