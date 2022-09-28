@@ -19,6 +19,7 @@ import { DateTime } from "luxon";
 import NewGamesList from "../components/GamesList";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function OpenGamesPage({
     token,
@@ -27,8 +28,8 @@ export default function OpenGamesPage({
     username,
     game,
     setGame,
-    reload, 
-    setReload
+    reload,
+    setReload,
 }) {
     const [displayDate, setDisplayDate] = useState("");
     const [filteredDate, setFilteredDate] = useState(null);
@@ -41,6 +42,7 @@ export default function OpenGamesPage({
     const [searchSession, setSearchSession] = useState("");
     const [searchMatch, setSearchMatch] = useState("");
     const [filterStatus, setFilterStatus] = useState("no filter");
+    const [locationList, setLocationList] = useState([]);
 
     console.log(allGamesList);
     console.log(filteredGames);
@@ -133,6 +135,28 @@ export default function OpenGamesPage({
             });
     };
 
+    useEffect(() => {
+        // get all locations and save them in state along with "Where" and "All"
+        axios
+            .get("https://teammate-app.herokuapp.com/court/", {
+                headers: {
+                    Authorization: `Token ${token}`,
+                },
+            })
+            .then((res) => {
+                const locations = [
+                    { location_id: "", park_name: "Where" },
+                    { location_id: "", park_name: "All" },
+                ];
+                locations.push(...res.data);
+                setLocationList(locations);
+            })
+            .catch((error) => {
+                console.log(error);
+                alert(error.message);
+            });
+    }, []);
+
     return (
         <>
             <Header />
@@ -174,10 +198,11 @@ export default function OpenGamesPage({
                             id="filter-location"
                             name="filter-location"
                         >
-                            <option value="">Where</option>
-                            <option value="">All</option>
-                            <option value="2">Pullen Park</option>
-                            <option value="1">Sanderford Park</option>
+                            {locationList.map((location) => (
+                                <option value={location.location_id}>
+                                    {location.park_name}
+                                </option>
+                            ))}
                         </Select>
                         <Select
                             textAlign="right"
@@ -255,8 +280,15 @@ export default function OpenGamesPage({
                             );
                         case "no results":
                             return (
-                                <Box textAlign="center" className="game-card" bg="#ffffff" maxW="350px" justifyContent="center" m="auto">
-                                    <Text color="#285E61" fontSize="18" >
+                                <Box
+                                    textAlign="center"
+                                    className="game-card"
+                                    bg="#ffffff"
+                                    maxW="350px"
+                                    justifyContent="center"
+                                    m="auto"
+                                >
+                                    <Text color="#285E61" fontSize="18">
                                         No games were found matching your
                                         filters.
                                     </Text>
@@ -268,7 +300,7 @@ export default function OpenGamesPage({
                                                 <IconButton
                                                     aria-label="ProfileItem"
                                                     fontSize="1.4em"
-                                                    size='sm'
+                                                    size="sm"
                                                     colorScheme="teal"
                                                     color="teal"
                                                     variant="solid"
